@@ -4,8 +4,16 @@ public class Bem {
     private String codigo;
     private String nome;
     private String descricao;
-    private String localizacao;
-    private String categoria;
+    private Localizacao localizacao;
+    private CategoriaDeBem categoria;
+
+    public Bem(String codigo, String nome, String descricao, Localizacao localizacao, CategoriaDeBem categoria) {
+        this.codigo = codigo;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.localizacao = localizacao;
+        this.categoria = categoria;
+    }
 
     public String getCodigo() { return codigo; }
 
@@ -17,11 +25,11 @@ public class Bem {
 
     public void setDescricao(String descricao) { this.descricao = descricao; }
 
-    public String getLocalizacao() { return localizacao; }
+    public Localizacao getLocalizacao() { return localizacao; }
 
-    public void setLocalizacao(String localizacao) { this.localizacao = localizacao; }
+    public void setLocalizacao(Localizacao localizacao) { this.localizacao = localizacao; }
 
-    public String getCategoria() { return categoria; }
+    public CategoriaDeBem getCategoria() { return categoria; }
 
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public void setCategoria(CategoriaDeBem categoria) { this.categoria = categoria; }
 }
