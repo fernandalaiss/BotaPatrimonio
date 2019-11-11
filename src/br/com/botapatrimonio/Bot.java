@@ -31,14 +31,22 @@ public class Bot {
         offset = 0;
 
         //loop para executar escuta infinita de novas mensagens
-        while (true){
-            //averigua mensagens pendentes no telegram
-            updatesResponse = bot.execute(new GetUpdates().limit(100).offset(offset));
-            //Lista de mensagens recebidas
-            List<Update> updates = updatesResponse.updates();
-            //análise de cada mensagem
-            for (Update update : updates) {
+        while(true){
+            updateList(1);
+        }
+    }
+
+    public void updateList(int caso){
+        //averigua mensagens pendentes no telegram
+        updatesResponse = bot.execute(new GetUpdates().limit(100).offset(offset));
+        //Lista de mensagens recebidas
+        List<Update> updates = updatesResponse.updates();
+        //análise de cada mensagem
+        for (Update update : updates) {
+            if(caso == 1){
                 tratarUpdate(update);
+            }else if(caso == 2){
+
             }
         }
     }
@@ -47,42 +55,71 @@ public class Bot {
 
         offset = update.updateId()+1;
         Message msg = update.message();
-        if(msg.equals("/start")){
 
-            baseResponse = bot.execute(new SendMessage(update.message().chat().id(), getMenu()));
+        baseResponse = bot.execute(new SendChatAction(msg.chat().id(), ChatAction.typing.name()));
+        baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Escrevendo..."));
+
+        if(msg.equals("/start")){
+            baseResponse = bot.execute(new SendMessage(update.message().chat().id(), "Bem vindo ao Bota Patrimônio\n"+getMenu()));
 
         }else if(msg.text().matches("-?\\d+(\\.\\d+)?")){ // se for um número vai pro switch
 
-            //enviando "Escrevendo..."
             baseResponse = bot.execute(new SendChatAction(msg.chat().id(), ChatAction.typing.name()));
-            baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Recebi um número: "+msg.text()));
-            baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Escrevendo..."));
-            baseResponse = bot.execute(new SendChatAction(msg.chat().id(), ChatAction.typing.name()));
-
             //enviando resposta
             switch (Integer.valueOf(msg.text())){
                 case 1:
-                    baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Caso 1"));
+                    cadastrarLocalizacao(update);
+                    break;
+                case 2:
+                    cadastrarCategoria(update);
+                    break;
+                case 3:
+                    cadastrarBem(update);
+                    break;
+                case 4:
+                    listarLocalizacoes(update);
+                    break;
+                case 5:
+                    listarCategorias(update);
+                    break;
+                case 6:
+                    listarBensPorLocalizacao(update);
+                    break;
+                case 7:
+                    buscarBemPorCodigo(update);
+                    break;
+                case 8:
+                    buscarBemPorNome(update);
+                    break;
+                case 9:
+                    buscarBemPorDescricao(update);
+                    break;
+                case 10:
+                    movimentarBem(update);
+                    break;
+                case 11:
+                    gerarRelatorio(update);
                     break;
                 default:
-                    baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Não entendi..."));
+                    baseResponse = bot.execute(new SendMessage(msg.chat().id(),"O número "+msg.text()+" não equivale a nenhuma opção."));
                     break;
             }
 
         }else { // se não for um número tratado acima
 
-            baseResponse = bot.execute(new SendChatAction(msg.chat().id(), ChatAction.typing.name()));
-            baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Escrevendo..."));
-
-
             //enviando resposta
             baseResponse = bot.execute(new SendChatAction(msg.chat().id(), ChatAction.typing.name()));
-            baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Não entendi..."));
+            baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Não entendi... Informe o número da opção desejada."));
         }
     }
 
+    private void cadastrarLocalizacao(Update update) {
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Para cadastrar um bem, informe "));
+        updateList(2);
+    }
+
     private String getMenu(){
-        String menu = "Bem vindo ao Bota Patrimônio\nPara realizar uma ação no inventário, informe uma das opções:\n" +
+        String menu = "Para realizar uma ação no inventário, informe uma das opções:\n" +
                 "1. cadastrar localização (sala, laboratório, auditório, etc.)\n" +
                 "2. cadastrar categoria de bem (ex.: móvel, eletrônico, material de limpeza, etc.)\n" +
                 "3. cadastrar bem (cadeira, mesa, computador, sabão em pó, etc.)\n" +
