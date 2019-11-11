@@ -1,11 +1,9 @@
 package br.com.botapatrimonio;
-
-import java.awt.List;
 import java.util.*;
 
 public class Inventario {
     Set<Localizacao> localizacaoList;
-    Set<CategoriaDeBem categoriaDeBemList;
+    Set<CategoriaDeBem> categoriaDeBemList;
     Map<String, Bem> bemMap;
     //talvez criar outros map com chaves necessárias para busca ou buscar outra solução
 
@@ -26,7 +24,7 @@ public class Inventario {
     public void cadastrarBem(){
 
     }
-
+/*
     public Set listarLocalizacoes(){
 
     }
@@ -58,4 +56,6 @@ public class Inventario {
     public String gerarRelatorio(){
 
     }
+
+ */
 }
