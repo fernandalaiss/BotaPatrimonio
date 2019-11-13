@@ -7,46 +7,46 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ChatAction;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendChatAction;
+import com.pengrad.telegrambot.request.SendDocument;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 
 import java.util.List;
+import java.util.function.ToDoubleBiFunction;
 
 public class Bot {
+    private Status status;
     private TelegramBot bot;
-    //gerencia o recebimento de mensagens
-    private GetUpdatesResponse updatesResponse;
-    //gerencia o envio de respostas
-    private SendResponse sendResponse;
-    //gerencia o envio de ações do chat
-    private BaseResponse baseResponse;
+    private GetUpdatesResponse updatesResponse;  //gerencia o recebimento de mensagens
+    private SendResponse sendResponse;           //gerencia o envio de respostas
+    private BaseResponse baseResponse;           //gerencia o envio de ações do chat
     private int offset;
+    static final String BOTTOKEN = "1034189549:AAHhdnEg7oz1objbfumXCWuS2PpqmsH-SP0";
+    private Inventario inventario;
+    private Localizacao localizacao;
+    private Bem bem;
+    private CategoriaDeBem categoriaDeBem;
+
 
     public void executaBot(){
-        bot = TelegramBotAdapter.build("1034189549:AAHhdnEg7oz1objbfumXCWuS2PpqmsH-SP0");
+        status = Status.NULL;
+        bot = TelegramBotAdapter.build(BOTTOKEN);
+        inventario = new Inventario();
 
         //controle de offset, ID atribuído a cada mensagem recebida
         offset = 0;
 
         //loop para executar escuta infinita de novas mensagens
         while(true){
-            updateList(1);
-        }
-    }
-
-    public void updateList(int caso){
-        //averigua mensagens pendentes no telegram
-        updatesResponse = bot.execute(new GetUpdates().limit(100).offset(offset));
-        //Lista de mensagens recebidas
-        List<Update> updates = updatesResponse.updates();
-        //análise de cada mensagem
-        for (Update update : updates) {
-            if(caso == 1){
+            //averigua mensagens pendentes no telegram
+            updatesResponse = bot.execute(new GetUpdates().limit(100).offset(offset));
+            //Lista de mensagens recebidas
+            List<Update> updates = updatesResponse.updates();
+            //análise de cada mensagem
+            for (Update update : updates) {
                 tratarUpdate(update);
-            }else if(caso == 2){
-
             }
         }
     }
@@ -54,83 +54,160 @@ public class Bot {
     private void tratarUpdate(Update update) {
 
         offset = update.updateId()+1;
-        Message msg = update.message();
+        String msg = update.message().text();
+        Long chat = update.message().chat().id();
 
-        baseResponse = bot.execute(new SendChatAction(msg.chat().id(), ChatAction.typing.name()));
-        baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Escrevendo..."));
+        baseResponse = bot.execute(new SendChatAction(chat, ChatAction.typing.name()));
+        baseResponse = bot.execute(new SendMessage(chat,"Escrevendo..."));
 
-        if(msg.equals("/start")){
-            baseResponse = bot.execute(new SendMessage(update.message().chat().id(), "Bem vindo ao Bota Patrimônio\n"+getMenu()));
-
-        }else if(msg.text().matches("-?\\d+(\\.\\d+)?")){ // se for um número vai pro switch
-
-            baseResponse = bot.execute(new SendChatAction(msg.chat().id(), ChatAction.typing.name()));
-            //enviando resposta
-            switch (Integer.valueOf(msg.text())){
-                case 1:
+        if(status == Status.NULL){
+            baseResponse = bot.execute(new SendChatAction(chat, ChatAction.typing.name()));
+            switch (msg){
+                case "/start":
+                    baseResponse = bot.execute(new SendMessage(chat, getComandos()));
+                    break;
+                case "/cadastrar_localizacao":
+                    status = Status.LOCAL_ESPERANDO_NOME;
                     cadastrarLocalizacao(update);
                     break;
-                case 2:
-                    cadastrarCategoria(update);
+                case "/cadastrar_categoria_de bem":
+                    status = Status.CATEGORIA_ESPERANDO_NOME;
+                    cadastrarCategoriaDeBem(update);
                     break;
-                case 3:
+                case "/cadastrar_bem":
+                    status = Status.BEM_ESPERANDO_NOME;
                     cadastrarBem(update);
                     break;
-                case 4:
-                    listarLocalizacoes(update);
+                case "/listar_localizacoes":
+                    listarLocalizacoes();
                     break;
-                case 5:
-                    listarCategorias(update);
+                case "/listar_categorias":
+                    //PEGAR DO INVENTÁRIO;
                     break;
-                case 6:
-                    listarBensPorLocalizacao(update);
+                case "/listar_bens_de_uma_localização":
+                    //PEGAR DO INVENTÁRIO;
                     break;
-                case 7:
-                    buscarBemPorCodigo(update);
+                case "/buscar_bem_por_codigo":
+                    //PEGAR DO INVENTÁRIO;
                     break;
-                case 8:
-                    buscarBemPorNome(update);
+                case "/buscar_bem_por_nome":
+                    //PEGAR DO INVENTÁRIO;
                     break;
-                case 9:
-                    buscarBemPorDescricao(update);
+                case "/buscar_bem_por_descricao":
+                    //PEGAR DO INVENTÁRIO;
                     break;
-                case 10:
-                    movimentarBem(update);
+                case "/movimentar_bem":
+                    //PEGAR DO INVENTÁRIO;
                     break;
-                case 11:
-                    gerarRelatorio(update);
+                case "/gerar_relatorio":
+                    //PEGAR DO INVENTÁRIO;
                     break;
                 default:
-                    baseResponse = bot.execute(new SendMessage(msg.chat().id(),"O número "+msg.text()+" não equivale a nenhuma opção."));
+                    baseResponse = bot.execute(new SendMessage(chat,"Não entendi... Utilize dos " +
+                            "um dos comandos abaixo para realizar alguma operação.\n"));
+                    baseResponse = bot.execute(new SendMessage(chat,getComandos()));
                     break;
             }
-
-        }else { // se não for um número tratado acima
-
-            //enviando resposta
-            baseResponse = bot.execute(new SendChatAction(msg.chat().id(), ChatAction.typing.name()));
-            baseResponse = bot.execute(new SendMessage(msg.chat().id(),"Não entendi... Informe o número da opção desejada."));
+        }else{
+            switch (status){
+                case LOCAL_ESPERANDO_NOME:
+                    localizacao.setNome(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, "Descrição?"));
+                    status = Status.LOCAL_ESPERANDO_DESCRICAO;
+                    break;
+                case LOCAL_ESPERANDO_DESCRICAO:
+                    localizacao.setDescricao(msg);
+                    inventario.cadastrarLocalizacao(localizacao);
+                    baseResponse = bot.execute(new SendMessage(chat, "Localização cadastrada."));
+                    status = Status.NULL;
+                    break;
+                case CATEGORIA_ESPERANDO_NOME:
+                    categoriaDeBem.setNome(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, "Descrição?"));
+                    status = Status.CATEGORIA_ESPERANDO_DESCRICAO;
+                    break;
+                case CATEGORIA_ESPERANDO_DESCRICAO:
+                    categoriaDeBem.setDescricao(msg);
+                    inventario.cadastrarCategoriaDeBem(categoriaDeBem);
+                    baseResponse = bot.execute(new SendMessage(chat, "Categoria de bem cadastrada."));
+                    status = Status.NULL;
+                    break;
+                case BEM_ESPERANDO_NOME:
+                    bem.setNome(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, "Descrição?"));
+                    status = Status.BEM_ESPERANDO_DESCRICAO;
+                    break;
+                case BEM_ESPERANDO_DESCRICAO:
+                    bem.setDescricao(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, listarLocalizacoes()));
+                    baseResponse = bot.execute(new SendMessage(chat, "Localização?"));
+                    status = Status.BEM_ESPERANDO_LOCALIZACAO;
+                    break;
+                case BEM_ESPERANDO_LOCALIZACAO:
+                    //TODO VERIFICAR SE MSG É VÁLIDO
+                    localizacao = inventario.getLocalizacao(msg);
+                    bem.setLocalizacao(localizacao);
+                    baseResponse = bot.execute(new SendMessage(chat, listarCategorias()));
+                    baseResponse = bot.execute(new SendMessage(chat, "Categoria?"));
+                    status = Status.BEM_ESPERANDO_CATEGORIA;
+                    break;
+                case BEM_ESPERANDO_CATEGORIA:
+                    //TODO VERIFICAR SE MSG É VÁLIDO
+                    categoriaDeBem = inventario.getCategoriaDeBem(msg);
+                    bem.setCategoria(categoriaDeBem);
+                    inventario.cadastrarBem(bem);
+                    baseResponse = bot.execute(new SendMessage(chat, "Bem cadastrado."));
+                    status = Status.NULL;
+                    break;
+            }
         }
     }
 
     private void cadastrarLocalizacao(Update update) {
-        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Para cadastrar um bem, informe "));
-        updateList(2);
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Cadastrando Localização, informe o que for " +
+                "pedido..."));
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Nome?"));
+        status = Status.LOCAL_ESPERANDO_NOME;
+        localizacao = new Localizacao();
     }
 
-    private String getMenu(){
-        String menu = "Para realizar uma ação no inventário, informe uma das opções:\n" +
-                "1. cadastrar localização (sala, laboratório, auditório, etc.)\n" +
-                "2. cadastrar categoria de bem (ex.: móvel, eletrônico, material de limpeza, etc.)\n" +
-                "3. cadastrar bem (cadeira, mesa, computador, sabão em pó, etc.)\n" +
-                "4. listar localizações\n" +
-                "5. listar categorias\n" +
-                "6. listar bens de uma localização\n" +
-                "7. buscar bem por código\n" +
-                "8. buscar bem por nome\n" +
-                "9. buscar bem por descricao\n" +
-                "10. movimentar bem\n" +
-                "11. gerar relatório";
-        return menu;
+    private void cadastrarCategoriaDeBem(Update update) {
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Cadastrando Categoria de Bem, informe o que " +
+                "for pedido..."));
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Nome?"));
+        status = Status.CATEGORIA_ESPERANDO_NOME;
+        categoriaDeBem = new CategoriaDeBem();
+    }
+
+    private void cadastrarBem(Update update) {
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Cadastrando Bem, informe o que for " +
+                "pedido..."));
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Nome?"));
+        status = Status.BEM_ESPERANDO_NOME;
+        bem = new Bem();
+    }
+
+    private String listarLocalizacoes() {
+        return inventario.listarLocalizacoes();
+    }
+
+    private String listarCategorias() {
+        return inventario.listarCategoriasDeBem();
+    }
+
+    private String getComandos(){
+        return "Lista de comandos do Bota Patrimônio:\n" +
+                "/start - exibe lista de comandos\n" +
+                "/cadastrar_localizacao\n" +
+                "/cadastrar_bem\n" +
+                "/cadastrar_categoria_de_bem\n" +
+                "/listar_localizacoes\n" +
+                "/listar_categorias\n" +
+                "/listar_bens_de_uma_localizacao\n" +
+                "/buscar_bem_por_codigo\n" +
+                "/buscar_bem_por_nome\n" +
+                "/buscar_bem_por_descricao\n" +
+                "/movimentar_bem\n" +
+                "/gerar_relatorio";
     }
 }

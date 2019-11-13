@@ -13,23 +13,34 @@ public class Inventario {
         bemMap = new HashMap<String, Bem>();
     }
 
-    public void cadastrarLocalizacao(){
-
+    public void cadastrarLocalizacao(Localizacao localizacao){
+        localizacaoList.add(localizacao);
     }
 
-    public void cadastrarCategoriaDeBem(){
-
+    public void cadastrarCategoriaDeBem(CategoriaDeBem categoriaDeBem){
+        categoriaDeBem.setCodigo("cat0"+String.valueOf(categoriaDeBemList.size()));
+        categoriaDeBemList.add(categoriaDeBem);
     }
 
-    public void cadastrarBem(){
-
+    public void cadastrarBem(Bem bem){
+        bem.setCodigo("bem0"+String.valueOf(bemMap.size()));
+        bemMap.put(bem.getCodigo(),bem);
     }
 /*
-    public Set listarLocalizacoes(){
+    public Localizacao getLocalizacao(String msg) {
 
     }
 
-    public Set listarCategoriasDeBem(){
+    public CategoriaDeBem getCategoriaDeBem(String msg) {
+    }
+
+    public String listarLocalizacoes(){
+        for (Localizacao localizacao : localizacaoList) {
+
+        }
+    }
+
+    public String listarCategoriasDeBem(){
 
     }
 

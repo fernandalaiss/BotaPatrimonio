@@ -7,6 +7,8 @@ public class Bem {
     private Localizacao localizacao;
     private CategoriaDeBem categoria;
 
+    public Bem(){}
+
     public Bem(String codigo, String nome, String descricao, Localizacao localizacao, CategoriaDeBem categoria) {
         this.codigo = codigo;
         this.nome = nome;
@@ -32,4 +34,8 @@ public class Bem {
     public CategoriaDeBem getCategoria() { return categoria; }
 
     public void setCategoria(CategoriaDeBem categoria) { this.categoria = categoria; }
+
+    public void setCodigo(String s) {
+        codigo = s;
+    }
 }

@@ -5,6 +5,8 @@ public class CategoriaDeBem {
     private String nome;
     private String descricao;
 
+    public CategoriaDeBem(){}
+
     public CategoriaDeBem(String codigo, String nome, String descricao) {
         this.codigo = codigo;
         this.nome = nome;
@@ -25,5 +27,9 @@ public class CategoriaDeBem {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public void setCodigo(String s) {
+        codigo = s;
     }
 }

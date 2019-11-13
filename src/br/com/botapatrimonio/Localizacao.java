@@ -4,6 +4,8 @@ public class Localizacao {
     private String nome;
     private String descricao;
 
+    public Localizacao(){}
+
     public Localizacao(String nome, String descricao) {
         this.nome = nome;
         this.descricao = descricao;
