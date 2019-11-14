@@ -32,4 +32,8 @@ public class CategoriaDeBem {
     public void setCodigo(String s) {
         codigo = s;
     }
+
+    public String getCodigo() {
+        return codigo;
+    }
 }

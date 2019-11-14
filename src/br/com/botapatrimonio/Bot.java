@@ -67,25 +67,22 @@ public class Bot {
                     baseResponse = bot.execute(new SendMessage(chat, getComandos()));
                     break;
                 case "/cadastrar_localizacao":
-                    status = Status.LOCAL_ESPERANDO_NOME;
                     cadastrarLocalizacao(update);
                     break;
-                case "/cadastrar_categoria_de bem":
-                    status = Status.CATEGORIA_ESPERANDO_NOME;
+                case "/cadastrar_categoria_de_bem":
                     cadastrarCategoriaDeBem(update);
                     break;
                 case "/cadastrar_bem":
-                    status = Status.BEM_ESPERANDO_NOME;
                     cadastrarBem(update);
                     break;
                 case "/listar_localizacoes":
-                    listarLocalizacoes();
+                    baseResponse = bot.execute(new SendMessage(chat, listarLocalizacoes()));
                     break;
                 case "/listar_categorias":
-                    //PEGAR DO INVENTÁRIO;
+                    baseResponse = bot.execute(new SendMessage(chat, listarCategorias()));
                     break;
-                case "/listar_bens_de_uma_localização":
-                    //PEGAR DO INVENTÁRIO;
+                case "/listar_bens_de_uma_localizacao":
+                    listarBensDeLocalizacoes(update);
                     break;
                 case "/buscar_bem_por_codigo":
                     //PEGAR DO INVENTÁRIO;
@@ -103,8 +100,8 @@ public class Bot {
                     //PEGAR DO INVENTÁRIO;
                     break;
                 default:
-                    baseResponse = bot.execute(new SendMessage(chat,"Não entendi... Utilize dos " +
-                            "um dos comandos abaixo para realizar alguma operação.\n"));
+                    baseResponse = bot.execute(new SendMessage(chat,"Não entendi... Utilize um dos comandos" +
+                            " abaixo para realizar alguma operação.\n"));
                     baseResponse = bot.execute(new SendMessage(chat,getComandos()));
                     break;
             }
@@ -139,26 +136,32 @@ public class Bot {
                     break;
                 case BEM_ESPERANDO_DESCRICAO:
                     bem.setDescricao(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, "Localização? Clique no link da localização desejada:"));
                     baseResponse = bot.execute(new SendMessage(chat, listarLocalizacoes()));
-                    baseResponse = bot.execute(new SendMessage(chat, "Localização?"));
                     status = Status.BEM_ESPERANDO_LOCALIZACAO;
                     break;
                 case BEM_ESPERANDO_LOCALIZACAO:
-                    //TODO VERIFICAR SE MSG É VÁLIDO
                     localizacao = inventario.getLocalizacao(msg);
                     bem.setLocalizacao(localizacao);
+                    baseResponse = bot.execute(new SendMessage(chat, "Categoria? Clique no link da categoria desejada:"));
                     baseResponse = bot.execute(new SendMessage(chat, listarCategorias()));
-                    baseResponse = bot.execute(new SendMessage(chat, "Categoria?"));
                     status = Status.BEM_ESPERANDO_CATEGORIA;
                     break;
                 case BEM_ESPERANDO_CATEGORIA:
-                    //TODO VERIFICAR SE MSG É VÁLIDO
                     categoriaDeBem = inventario.getCategoriaDeBem(msg);
                     bem.setCategoria(categoriaDeBem);
                     inventario.cadastrarBem(bem);
                     baseResponse = bot.execute(new SendMessage(chat, "Bem cadastrado."));
                     status = Status.NULL;
                     break;
+                case LISTAR_BENS_ESPERANDO_LOCALIZACAO:
+                    localizacao = inventario.getLocalizacao(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, localizacao.getBens()));
+                    status = Status.NULL;
+                    break;
+            }
+            if (status == Status.NULL){
+                baseResponse = bot.execute(new SendMessage(chat, getComandos()));
             }
         }
     }
@@ -195,12 +198,18 @@ public class Bot {
         return inventario.listarCategoriasDeBem();
     }
 
+    private void listarBensDeLocalizacoes(Update update) {
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Clique no link da localização desejada:\n"));
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),listarLocalizacoes()));
+        status = Status.LISTAR_BENS_ESPERANDO_LOCALIZACAO;
+    }
+
     private String getComandos(){
         return "Lista de comandos do Bota Patrimônio:\n" +
                 "/start - exibe lista de comandos\n" +
                 "/cadastrar_localizacao\n" +
-                "/cadastrar_bem\n" +
                 "/cadastrar_categoria_de_bem\n" +
+                "/cadastrar_bem\n" +
                 "/listar_localizacoes\n" +
                 "/listar_categorias\n" +
                 "/listar_bens_de_uma_localizacao\n" +
