@@ -58,28 +58,33 @@ public class Inventario {
         return list;
     }
 
+    public String listarBens(){
+        String list = "Código - Nome - Descrição";
+        for (String c : bemMap.keySet()) {
+            Bem bem = bemMap.get(c);
+            list = list.concat("\n/"+bem.getCodigo()+" - "+bem.getNome()+" - "+bem.getDescricao());
+        }
+        return list;
+    }
 
-/*
 
     public Bem buscarBemPorCodigo(String codigo){
-
+        return new Bem();
     }
 
     public Bem buscarBemPorNome(String nome){
-
+        return new Bem();
     }
 
     public Bem buscarBemPorDescricao(){
-
+        return new Bem();
     }
 
-    public void movimentarBem(Localizacao outroLocal){
+    public void movimentarBem(Bem bem, String nomeLocal){
 
     }
 
     public String gerarRelatorio(){
-
+        return "";
     }
-
- */
 }
