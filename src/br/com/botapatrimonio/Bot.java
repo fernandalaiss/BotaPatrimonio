@@ -159,6 +159,18 @@ public class Bot {
                     baseResponse = bot.execute(new SendMessage(chat, localizacao.getBens()));
                     status = Status.NULL;
                     break;
+                case MOVIMENTAR_BEM_ESPERANDO_BEM:
+                    bem = inventario.getBem(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, "Localização? Clique no link da localização desejada:"));
+                    baseResponse = bot.execute(new SendMessage(chat, listarLocalizacoes()));
+                    status = Status.MOVIMENTAR_BEM_ESPERANDO_LOCALIZACAO;
+                    break;
+                case MOVIMENTAR_BEM_ESPERANDO_LOCALIZACAO:
+                    localizacao = inventario.getLocalizacao(msg);
+                    inventario.movimentarBem(bem, localizacao);
+                    baseResponse = bot.execute(new SendMessage(chat, "Bem movido."));
+                    status = Status.NULL;
+                    break;
             }
             if (status == Status.NULL){
                 baseResponse = bot.execute(new SendMessage(chat, getComandos()));
@@ -202,6 +214,18 @@ public class Bot {
         baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Clique no link da localização desejada:\n"));
         baseResponse = bot.execute(new SendMessage(update.message().chat().id(),listarLocalizacoes()));
         status = Status.LISTAR_BENS_ESPERANDO_LOCALIZACAO;
+    }
+
+    private String listarBens() {
+        return inventario.listarBens();
+    }
+
+    private void movimentarBem(Update update) {
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(), "Movimentando Bem, informe o que for " +
+                "pedido..."));
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(), "Clique no link do bem desejado:\n"));
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),listarBens()));
+        status = Status.MOVIMENTAR_BEM_ESPERANDO_BEM;
     }
 
     private String getComandos(){

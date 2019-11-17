@@ -35,6 +35,11 @@ public class Inventario {
         return localizacaoList.get(msg);
     }
 
+    public Bem getBem(String msg) {
+        msg = msg.replace("/", "");
+        return bemMap.get(msg);
+    }
+
     public CategoriaDeBem getCategoriaDeBem(String msg) {
         msg = msg.replace("/","");
         return categoriaDeBemList.get(msg);
@@ -80,8 +85,8 @@ public class Inventario {
         return new Bem();
     }
 
-    public void movimentarBem(Bem bem, String nomeLocal){
-
+    public void movimentarBem(Bem bem, Localizacao outroLocal){
+        bem.setLocalizacao(outroLocal);
     }
 
     public String gerarRelatorio(){
