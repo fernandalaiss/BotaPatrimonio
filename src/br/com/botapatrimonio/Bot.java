@@ -94,7 +94,7 @@ public class Bot {
                     //PEGAR DO INVENTÁRIO;
                     break;
                 case "/movimentar_bem":
-                    //PEGAR DO INVENTÁRIO;
+                    movimentarBem(update);
                     break;
                 case "/gerar_relatorio":
                     //PEGAR DO INVENTÁRIO;
