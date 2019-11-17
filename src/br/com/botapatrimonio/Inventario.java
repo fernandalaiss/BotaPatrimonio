@@ -86,6 +86,9 @@ public class Inventario {
     }
 
     public void movimentarBem(Bem bem, Localizacao outroLocal){
+        Localizacao localOriginal = bem.getLocalizacao();
+        localizacaoList.get(localOriginal.getCodigo()).removeBem(bem);
+        localizacaoList.get(outroLocal.getCodigo()).addBem(bem);
         bem.setLocalizacao(outroLocal);
     }
 

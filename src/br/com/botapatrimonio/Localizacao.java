@@ -17,6 +17,10 @@ public class Localizacao {
         bensContidos.add(bem);
     }
 
+    public void removeBem(Bem bem) {
+        bensContidos.remove(bem);
+    }
+
     public String getBens(){
         String list = "Código - Nome";
         for (Bem b:bensContidos) {
