@@ -74,14 +74,31 @@ public class Inventario {
 
 
     public Bem buscarBemPorCodigo(String codigo){
+        for (String c : bemMap.keySet()) {
+            if(c.equals(codigo)){
+                return bemMap.get(c);
+            }
+        }
         return new Bem();
     }
 
     public Bem buscarBemPorNome(String nome){
+        for (String c : bemMap.keySet()) {
+            Bem bem = bemMap.get(c);
+            if(bem.getNome().equals(nome)){
+                return bem;
+            }
+        }
         return new Bem();
     }
 
-    public Bem buscarBemPorDescricao(){
+    public Bem buscarBemPorDescricao(String descricao){
+        for (String c : bemMap.keySet()) {
+            Bem bem = bemMap.get(c);
+            if(bem.getDescricao().equals(descricao)){
+                return bem;
+            }
+        }
         return new Bem();
     }
 
