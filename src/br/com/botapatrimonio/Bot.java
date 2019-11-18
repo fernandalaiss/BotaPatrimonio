@@ -91,7 +91,7 @@ public class Bot {
                     buscarBemPorNome(update);
                     break;
                 case "/buscar_bem_por_descricao":
-                    /buscarBemPorDescricao();
+                    buscarBemPorDescricao(update);
                     break;
                 case "/movimentar_bem":
                     movimentarBem(update);
