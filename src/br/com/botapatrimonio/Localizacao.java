@@ -26,7 +26,7 @@ public class Localizacao {
         return list.concat(fgetBens(""));
     }
 
-    private String fgetBens(String prefix) {
+    String fgetBens(String prefix) {
         String list = "";
 
         for (Bem b:bensContidos) {

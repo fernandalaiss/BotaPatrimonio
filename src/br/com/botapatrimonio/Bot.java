@@ -97,7 +97,7 @@ public class Bot {
                     movimentarBem(update);
                     break;
                 case "/gerar_relatorio":
-                    //PEGAR DO INVENTÁRIO;
+                    baseResponse = bot.execute(new SendMessage(chat, gerarRelatorio()));
                     break;
                 default:
                     baseResponse = bot.execute(new SendMessage(chat,"Não entendi... Utilize um dos comandos" +
@@ -257,6 +257,10 @@ public class Bot {
         baseResponse = bot.execute(new SendMessage(update.message().chat().id(), "Clique no link do bem desejado:\n"));
         baseResponse = bot.execute(new SendMessage(update.message().chat().id(),listarBens()));
         status = Status.MOVIMENTAR_BEM_ESPERANDO_BEM;
+    }
+
+    private String gerarRelatorio() {
+        return inventario.gerarRelatorio();
     }
 
     private String getComandos(){
