@@ -174,17 +174,19 @@ public class Bot {
                 case BUSCA_ESPERANDO_CODIGO:
                     bem = inventario.buscarBemPorCodigo(msg);
                     baseResponse = bot.execute(new SendMessage(chat, "Olá, seu bem está em:"+ bem.getLocalizacao()));
+                    status = Status.NULL;
 
                     break;
                 case BUSCA_ESPERAND_NOME:
                     bem = inventario.buscarBemPorNome(msg);
                     baseResponse = bot.execute(new SendMessage(chat, "Olá, seu bem está em:"+ bem.getLocalizacao()));
-
+                    status = Status.NULL;
 
                     break;
                 case BUSCA_ESPERANDO_DESCRICAO:
                     bem = inventario.buscarBemPorDescricao(msg);
                     baseResponse = bot.execute(new SendMessage(chat, "Olá, seu bem está em:"+ bem.getLocalizacao()));
+                    status = Status.NULL;
 
                     break;
             }
