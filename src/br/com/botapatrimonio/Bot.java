@@ -85,19 +85,19 @@ public class Bot {
                     listarBensDeLocalizacoes(update);
                     break;
                 case "/buscar_bem_por_codigo":
-                    //PEGAR DO INVENTÁRIO;
+                   buscarBemPorCodigo(update);
                     break;
                 case "/buscar_bem_por_nome":
-                    //PEGAR DO INVENTÁRIO;
+                    buscarBemPorNome(update);
                     break;
                 case "/buscar_bem_por_descricao":
-                    //PEGAR DO INVENTÁRIO;
+                    buscarBemPorDescricao(update);
                     break;
                 case "/movimentar_bem":
                     movimentarBem(update);
                     break;
                 case "/gerar_relatorio":
-                    //PEGAR DO INVENTÁRIO;
+                    baseResponse = bot.execute(new SendMessage(chat, gerarRelatorio()));
                     break;
                 default:
                     baseResponse = bot.execute(new SendMessage(chat,"Não entendi... Utilize um dos comandos" +
@@ -171,6 +171,24 @@ public class Bot {
                     baseResponse = bot.execute(new SendMessage(chat, "Bem movido."));
                     status = Status.NULL;
                     break;
+                case BUSCA_ESPERANDO_CODIGO:
+                    bem = inventario.buscarBemPorCodigo(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, "Olá, seu bem está em:"+ bem.getLocalizacao().getNome()));
+                    status = Status.NULL;
+
+                    break;
+                case BUSCA_ESPERAND_NOME:
+                    bem = inventario.buscarBemPorNome(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, "Olá, seu bem está em:"+ bem.getLocalizacao().getNome()));
+                    status = Status.NULL;
+
+                    break;
+                case BUSCA_ESPERANDO_DESCRICAO:
+                    bem = inventario.buscarBemPorDescricao(msg);
+                    baseResponse = bot.execute(new SendMessage(chat, "Olá, seu bem está em:"+ bem.getLocalizacao().getNome()));
+                    status = Status.NULL;
+
+                    break;
             }
             if (status == Status.NULL){
                 baseResponse = bot.execute(new SendMessage(chat, getComandos()));
@@ -220,12 +238,29 @@ public class Bot {
         return inventario.listarBens();
     }
 
+    private void buscarBemPorCodigo(Update update){
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Porfavor, digite o codigo do bem a ser procurado"));
+        status = status.BUSCA_ESPERANDO_CODIGO;
+    }
+    private void buscarBemPorNome(Update update){
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Porfavor, digite o nome do bem a ser procurado"));
+        status = status.BUSCA_ESPERAND_NOME;
+    }private void buscarBemPorDescricao(Update update){
+        baseResponse = bot.execute(new SendMessage(update.message().chat().id(),"Porfavor, digite a descricao do bem a ser procurado"));
+        status = status.BUSCA_ESPERANDO_DESCRICAO;
+
+    }
+
     private void movimentarBem(Update update) {
         baseResponse = bot.execute(new SendMessage(update.message().chat().id(), "Movimentando Bem, informe o que for " +
                 "pedido..."));
         baseResponse = bot.execute(new SendMessage(update.message().chat().id(), "Clique no link do bem desejado:\n"));
         baseResponse = bot.execute(new SendMessage(update.message().chat().id(),listarBens()));
         status = Status.MOVIMENTAR_BEM_ESPERANDO_BEM;
+    }
+
+    private String gerarRelatorio() {
+        return inventario.gerarRelatorio();
     }
 
     private String getComandos(){

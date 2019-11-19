@@ -23,8 +23,14 @@ public class Localizacao {
 
     public String getBens(){
         String list = "Código - Nome";
+        return list.concat(fgetBens(""));
+    }
+
+    String fgetBens(String prefix) {
+        String list = "";
+
         for (Bem b:bensContidos) {
-            list = list.concat("\n"+b.getCodigo()+" - "+b.getNome());
+            list = list.concat("\n"+prefix+b.getCodigo()+" - "+b.getNome());
         }
         return list;
     }
