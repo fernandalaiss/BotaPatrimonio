@@ -158,16 +158,15 @@ public class Inventario {
         // Local, categoria, nome
         StringBuilder relatorio = new StringBuilder();
 
-
         // Local
-        relatorio.append("Bens por localização");
+        relatorio.append("Bens por localização\nCódigo - Nome - Descrição");
         for(String c : localizacaoList.keySet()) {
             relatorio.append("\n"+localizacaoList.get(c).getNome());
             relatorio.append(localizacaoList.get(c).fgetBens("  "));
         }
 
         // Categoria
-        relatorio.append("\n\nBens por categoria");
+        relatorio.append("\n\nBens por categoria\nCódigo - Nome - Descrição");
         for(String c : categoriaDeBemList.keySet()) {
 
             relatorio.append("\n"+categoriaDeBemList.get(c).getNome());
@@ -179,7 +178,41 @@ public class Inventario {
             }
         }
 
-        // TODO nome
+        // Nome
+        Vector<String> nomesDosBens = new Vector<>();
+
+        for(String c : bemMap.keySet()) {
+            String nome = bemMap.get(c).getNome();
+
+            if(nomesDosBens.isEmpty()) {
+                nomesDosBens.add(nome);
+                continue;
+            }
+
+            Iterator i = nomesDosBens.iterator();
+            while(i.hasNext()) {
+                String nomeNoVector = i.next().toString();
+                int diff = nome.compareToIgnoreCase(nomeNoVector);
+
+                if(diff <= 0) {
+                    int indiceAtual = nomesDosBens.indexOf(nomeNoVector);
+                    nomesDosBens.add(indiceAtual, nome);
+                    break;
+                }
+
+                if(!i.hasNext()) {
+                    nomesDosBens.add(nome);
+                    break;
+                }
+            }
+        }
+
+        relatorio.append("\n\nBens por nome");
+
+        Iterator i = nomesDosBens.iterator();
+        while (i.hasNext()) {
+            relatorio.append("\n  "+i.next().toString());
+        }
 
         return relatorio.toString();
     }
