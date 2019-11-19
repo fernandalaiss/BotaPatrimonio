@@ -13,7 +13,7 @@ public class Inventario {
         categoriaDeBemList = new HashMap<String,CategoriaDeBem>();
         bemMap = new HashMap<String, Bem>();
 
-        inventarioTestSetup();
+        //inventarioTestSetup();
     }
 
     public void inventarioTestSetup() {
