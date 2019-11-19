@@ -58,7 +58,7 @@ public class Bot {
         Long chat = update.message().chat().id();
 
         baseResponse = bot.execute(new SendChatAction(chat, ChatAction.typing.name()));
-        baseResponse = bot.execute(new SendMessage(chat,"Escrevendo..."));
+        // baseResponse = bot.execute(new SendMessage(chat,"Escrevendo..."));
 
         if(status == Status.NULL){
             baseResponse = bot.execute(new SendChatAction(chat, ChatAction.typing.name()));
